@@ -16,7 +16,6 @@ export const parseRDF = (content, format) => {
     const modifiedContent = content.replace(searchString, match =>
       match.replace(/\./g, '_')
     )
-
     const baseURI = determineBaseURI(modifiedContent, format)
     parse(modifiedContent, store, baseURI, format, (error, graph) => {
       if (error) {
@@ -36,7 +35,6 @@ const determineBaseURI = (content, format) => {
       return baseURIMatch[1]
     }
   } else if (format === 'application/rdf+xml') {
-    console.log(content)
     // Look for ontology IRI in OWL content
     const ontologyIRIMatch = content.match(
       /<rdf:RDF[^>]*\s+xmlns\s*=\s*['"]([^'"]*)['"]/

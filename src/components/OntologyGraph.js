@@ -4,6 +4,7 @@ import { parseRDF } from './rdfUtils'
 import { filterGraphData, assignGradientColor } from './filterUtils'
 import { handleKeyDown } from './textUtils'
 import GradientBarChart from './GradientBarChart'
+
 const OntologyGraph = () => {
   const [nodes, setNodes] = useState([])
   const [edges, setEdges] = useState([])
@@ -32,7 +33,11 @@ const OntologyGraph = () => {
 
   const selectFile = () => {
     const fileInput = document.getElementById('fileInput')
-    fileInput.click()
+    if (fileInput) {
+      fileInput.click() // Trigger click event on file input element
+    } else {
+      console.error('File input element not found')
+    }
   }
 
   const fetchOntology = async (fileExtension, fileContent) => {
@@ -80,7 +85,11 @@ const OntologyGraph = () => {
     }
     const reader = new FileReader()
 
-    setFileName(file)
+    reader.onerror = error => {
+      console.error('Error reading file:', error)
+      // Reset loading state
+    }
+
     reader.onload = async event => {
       try {
         const fileContent = event.target.result
@@ -91,10 +100,12 @@ const OntologyGraph = () => {
           return
         }
 
+        // Extract file name and set it as the file name state
+        setFileName(file.name)
+
         let mimeType = file.name.endsWith('.owl')
           ? 'application/rdf+xml'
           : 'text/turtle'
-
         fetchOntology(mimeType, fileContent)
       } catch (error) {
         // Reset loading state
@@ -195,6 +206,9 @@ const OntologyGraph = () => {
           smooth: {
             enabled: true,
             type: 'continuous'
+          },
+          arrows: {
+            to: true // This indicates that arrows will be drawn at the end of the edge
           }
         },
         nodes: {
