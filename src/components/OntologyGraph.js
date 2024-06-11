@@ -3,16 +3,17 @@ import { DataSet, Network } from 'vis-network/standalone'
 import { parseRDF } from './rdfUtils'
 import { filterGraphData, assignGradientColor } from './filterUtils'
 import { handleKeyDown } from './textUtils'
-
+import GradientBarChart from './GradientBarChart'
 const OntologyGraph = () => {
   const [nodes, setNodes] = useState([])
   const [edges, setEdges] = useState([])
   const [searchQuery, setSearchQuery] = useState('')
   const [filteredNodes, setFilteredNodes] = useState([])
   const [filteredData, setFilteredData] = useState([])
-  const [maxNodes, setMaxNodes] = useState(1)
+  const [maxNodes, setMaxNodes] = useState(15)
   const [current_node_id, setCurrentNodeId] = useState('')
-  const [fileName, setFileName] = useState('')
+  const [fileName, _] = useState('')
+  const [selectedNodeName, setSelectedNodeName] = useState('')
 
   const selectFile = () => {
     const fileInput = document.getElementById('fileInput')
@@ -26,12 +27,11 @@ const OntologyGraph = () => {
       // Reset loading state
       return
     }
-
     const reader = new FileReader()
-    setFileName(file.name)
 
     reader.onload = async event => {
       try {
+        console.log(event)
         const fileContent = event.target.result
 
         if (!fileContent) {
@@ -53,6 +53,7 @@ const OntologyGraph = () => {
           rdfGraph.statements.forEach(statement => {
             nodeSet.add(statement.subject.value)
             nodeSet.add(statement.object.value)
+
             edgeSet.add({
               from: statement.subject.value,
               to: statement.object.value,
@@ -78,6 +79,10 @@ const OntologyGraph = () => {
     }
 
     reader.readAsText(file)
+  }
+
+  const handleRefocus = nodeID => {
+    setCurrentNodeId(nodeID)
   }
 
   const handleChange = event => {
@@ -138,6 +143,7 @@ const OntologyGraph = () => {
         id: node,
         label: node,
         color: {
+          color: 'black',
           background: assignGradientColor(
             current_node_id,
             node,
@@ -151,7 +157,18 @@ const OntologyGraph = () => {
       }
       const options = {} // Adjust options as needed
       try {
-        new Network(container, data, options)
+        const network = new Network(container, data, options)
+
+        // Add event listener for node clicks
+        network.on('click', function (params) {
+          if (params.nodes.length > 0) {
+            const nodeId = params.nodes[0]
+            console.log('Node clicked:', nodeId)
+
+            setSelectedNodeName(nodeId)
+            // Add your logic here for what happens when a node is clicked
+          }
+        })
       } catch (error) {
         console.error('Error while creating network graph:', error)
       }
@@ -185,10 +202,16 @@ const OntologyGraph = () => {
             onChange={e => setSearchQuery(e.target.value)}
           />
         </p>
-        <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+        <div
+          style={{
+            height: '200px',
+            border: '2px solid black',
+            overflowY: 'auto'
+          }}
+        >
           <ul>
             {filteredNodes.map(node => {
-              const slicedId = node.id.split('/').slice(5).join('/')
+              const slicedId = node.id.split('/').slice(6).join('/')
               const displayId = slicedId || node.id // Use full id if slicedId is empty
               return (
                 <li key={node.id} onClick={() => handleSearch(node.id)}>
@@ -214,17 +237,46 @@ const OntologyGraph = () => {
         </div>
         <h1>Graph</h1>
       </div>
-      <div style={{ width: '90%', margin: '0 auto' }}>
+      <div style={{ width: '100%', margin: '0 auto', position: 'relative' }}>
         <div
           id='ontologyGraph'
           style={{
-            height: '600px',
+            height: '800px',
             border: '2px solid black',
             margin: '0 auto'
           }}
+        ></div>
+        <div
+          style={{
+            position: 'absolute',
+            top: '10px',
+            left: '10px',
+            backgroundColor: 'white',
+            padding: '5px',
+            border: '1px solid black'
+          }}
         >
-          {' '}
+          <p>Distance to root</p>
+          <GradientBarChart />
         </div>
+        {selectedNodeName && (
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '10px',
+              right: '10px',
+              backgroundColor: 'white',
+              padding: '5px',
+              border: '1px solid black'
+            }}
+          >
+            Selected Node: {selectedNodeName}
+            <br></br>
+            <button onClick={() => handleRefocus(selectedNodeName)}>
+              Focus on this Node
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )

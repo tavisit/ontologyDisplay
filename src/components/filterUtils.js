@@ -1,7 +1,6 @@
 export const filterGraphData = (nodes, edges, startNodeId) => {
   // Function to filter nodes and edges based on depth
   // Filter graph data up to depth 5
-  const depthLimit = 5
   const filteredNodes = new Set()
   const filteredEdges = []
 
@@ -21,8 +20,6 @@ export const filterGraphData = (nodes, edges, startNodeId) => {
   while (queue.length > 0) {
     const { id: currentNodeId, distance: currentDepth } = queue.shift() // Dequeue the first node from the queue
     filteredNodes.add(currentNodeId) // Add the current node to the filtered nodes
-
-    if (currentDepth >= depthLimit) continue // Check depth limit
 
     // Find edges connected to the current node
     const connectedEdges = edges.filter(
@@ -46,7 +43,6 @@ export const filterGraphData = (nodes, edges, startNodeId) => {
   const sortedNodes = [...filteredNodes].sort(
     (a, b) => distances[a] - distances[b]
   )
-  console.log(sortedNodes, distances)
   return {
     nodes: new Set(sortedNodes),
     edges: [...new Set(filteredEdges)],
@@ -55,10 +51,10 @@ export const filterGraphData = (nodes, edges, startNodeId) => {
 }
 
 export const assignGradientColor = (initial_node, node, distances) => {
-  if (node == initial_node) return '#FF0000'
+  if (node == initial_node) return '#ff6400'
   // Define the start and end colors
-  const startColor = [255, 100, 0] // Red
-  const endColor = [0, 100, 255] // Blue
+  const startColor = [255, 100, 0] // #ff6400
+  const endColor = [0, 100, 255] // #0064ff
 
   // Calculate the distance of the node from the start node
   const distance = distances[node] ? distances[node] : 0

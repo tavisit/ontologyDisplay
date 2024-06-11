@@ -36,6 +36,7 @@ const determineBaseURI = (content, format) => {
       return baseURIMatch[1]
     }
   } else if (format === 'application/rdf+xml') {
+    console.log(content)
     // Look for ontology IRI in OWL content
     const ontologyIRIMatch = content.match(
       /<rdf:RDF[^>]*\s+xmlns\s*=\s*['"]([^'"]*)['"]/
