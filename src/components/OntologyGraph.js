@@ -12,12 +12,63 @@ const OntologyGraph = () => {
   const [filteredData, setFilteredData] = useState([])
   const [maxNodes, setMaxNodes] = useState(15)
   const [current_node_id, setCurrentNodeId] = useState('')
-  const [fileName, _] = useState('')
+  const [fileName, setFileName] = useState('')
   const [selectedNodeName, setSelectedNodeName] = useState('')
+
+  const defaultFile = async () => {
+    try {
+      const file = '/eut_research_infrastructure.ttl'
+      const response = await fetch(file)
+      if (!response.ok) {
+        throw new Error('Failed to fetch file')
+      }
+      setFileName(file)
+      const content = await response.text()
+      fetchOntology('text/turtle', content)
+    } catch (error) {
+      console.error('Error fetching file:', error)
+    }
+  }
 
   const selectFile = () => {
     const fileInput = document.getElementById('fileInput')
     fileInput.click()
+  }
+
+  const fetchOntology = async (fileExtension, fileContent) => {
+    try {
+      const rdfGraph = await parseRDF(fileContent, fileExtension)
+
+      const nodeSet = new Set()
+      const edgeSet = new Set()
+
+      rdfGraph.statements.forEach(statement => {
+        nodeSet.add(statement.subject.value)
+        nodeSet.add(statement.object.value)
+
+        edgeSet.add(
+          JSON.stringify({
+            from: statement.subject.value,
+            to: statement.object.value,
+            label:
+              statement.predicate.value.split('/')[
+                statement.predicate.value.split('/').length - 1
+              ]
+          })
+        )
+      })
+
+      const nodes = Array.from(nodeSet).map(node => ({
+        id: node,
+        label: node
+      }))
+      const edges = Array.from(edgeSet).map(JSON.parse)
+
+      setNodes(nodes)
+      setEdges(edges)
+    } catch (err) {
+      console.error('Error while parsing:', err)
+    }
   }
 
   const loadOntology = async event => {
@@ -29,9 +80,9 @@ const OntologyGraph = () => {
     }
     const reader = new FileReader()
 
+    setFileName(file)
     reader.onload = async event => {
       try {
-        console.log(event)
         const fileContent = event.target.result
 
         if (!fileContent) {
@@ -44,34 +95,7 @@ const OntologyGraph = () => {
           ? 'application/rdf+xml'
           : 'text/turtle'
 
-        try {
-          const rdfGraph = await parseRDF(fileContent, mimeType)
-
-          const nodeSet = new Set()
-          const edgeSet = new Set()
-
-          rdfGraph.statements.forEach(statement => {
-            nodeSet.add(statement.subject.value)
-            nodeSet.add(statement.object.value)
-
-            edgeSet.add({
-              from: statement.subject.value,
-              to: statement.object.value,
-              label: statement.predicate.value
-            })
-          })
-
-          const nodes = Array.from(nodeSet).map(node => ({
-            id: node,
-            label: node
-          }))
-          const edges = Array.from(edgeSet)
-
-          setNodes(nodes)
-          setEdges(edges)
-        } catch (err) {
-          console.error('Error while parsing:', err)
-        }
+        fetchOntology(mimeType, fileContent)
       } catch (error) {
         // Reset loading state
         console.error('Error parsing file content:', error)
@@ -141,7 +165,7 @@ const OntologyGraph = () => {
     if (filteredData && filteredData.nodes && filteredData.edges) {
       const nodes = Array.from(filteredData.nodes).map(node => ({
         id: node,
-        label: node,
+        label: shortenName(node),
         color: {
           color: 'black',
           background: assignGradientColor(
@@ -155,7 +179,32 @@ const OntologyGraph = () => {
         nodes: new DataSet(nodes),
         edges: new DataSet(filteredData.edges)
       }
-      const options = {} // Adjust options as needed
+      const options = {
+        layout: {
+          randomSeed: 1, // optional - to get consistent layout across multiple calls
+          improvedLayout: true
+        },
+        physics: {
+          enabled: false
+        },
+        interaction: {
+          navigationButtons: true,
+          keyboard: true
+        },
+        edges: {
+          smooth: {
+            enabled: true,
+            type: 'continuous'
+          }
+        },
+        nodes: {
+          shape: 'dot',
+          size: 10,
+          borderWidth: 2
+        },
+        groups: {}
+        // Additional options...
+      }
       try {
         const network = new Network(container, data, options)
 
@@ -175,6 +224,11 @@ const OntologyGraph = () => {
     }
   }, [filteredData])
 
+  const shortenName = node_label => {
+    const sliced = node_label.split('/').slice(6).join('/')
+    return sliced || node_label
+  }
+
   return (
     <div style={{ width: '80%', margin: '0 auto' }}>
       <div
@@ -182,6 +236,7 @@ const OntologyGraph = () => {
         style={{ width: '60%', margin: '0 auto' }}
       >
         <h1>Settings</h1>
+        <button onClick={defaultFile}>Default TTL File</button>
         <h3>File input</h3>
         <input
           id='fileInput'
@@ -211,11 +266,9 @@ const OntologyGraph = () => {
         >
           <ul>
             {filteredNodes.map(node => {
-              const slicedId = node.id.split('/').slice(6).join('/')
-              const displayId = slicedId || node.id // Use full id if slicedId is empty
               return (
                 <li key={node.id} onClick={() => handleSearch(node.id)}>
-                  {displayId}
+                  {shortenName(node.label)}
                 </li>
               )
             })}
@@ -263,7 +316,7 @@ const OntologyGraph = () => {
           <div
             style={{
               position: 'absolute',
-              bottom: '10px',
+              top: '10px',
               right: '10px',
               backgroundColor: 'white',
               padding: '5px',
