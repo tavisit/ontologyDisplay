@@ -23,7 +23,7 @@ docker pull tavisit/ontology-graph:master
 docker run -p 3000:3000 tavisit/ontology-graph:master
 ~~~
 * Now the application is hosted at __localhost:3000__:
-* 
+  
 #### Update the docker image:
   * Pull the latest version of the image
     ~~~bash
