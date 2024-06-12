@@ -20,7 +20,7 @@ docker pull tavisit/ontology-graph:master
 ~~~
 * Deploy it:
 ~~~bash
-docker run -p 3000:3000 tavisit/ontology-graph:master
+docker run -p 3000:3000 --name ontology-display tavisit/ontology-graph:master
 ~~~
 * Now the application is hosted at __localhost:3000__:
   
@@ -43,5 +43,5 @@ docker run -p 3000:3000 tavisit/ontology-graph:master
     ~~~
   * Run a new container with the updated image
     ~~~bash
-    docker run -p 3000:3000 tavisit/ontology-graph:master
+    docker run -p 3000:3000 --name ontology-display tavisit/ontology-graph:master
     ~~~
