@@ -13,8 +13,10 @@ COPY . .
 # Build the app
 RUN npm run build
 
-# Expose the port the app runs on
-EXPOSE 3000
+# Install serve to serve the build
+RUN npm install -g serve
 
-# Serve the app
-CMD [ "npx", "serve", "-s", "build" ]
+# Serve the build folder
+CMD ["serve", "-s", "build", "-l", "3000"]
+
+EXPOSE 3000
