@@ -1,9 +1,9 @@
 Solution for the Knowledge Based Systems task, problem proposed by Prof. dr. ing. GROZA Adrian from Technical University of Cluj-Napoca.  
 
 #### Problem - Display an ontology (owl or ttl) as a knowledge graph in a web interface 
-* one example https://www.youtube.com/watch?v=tUwNHOY7OHw. 
-* Task 2.1 Displaying and navigating the knowledge graphs suffices (no graphs, or time bars etc). I will provide a tiny ontology.
-* Task 2.2 Deploy a running version of the web page at http://users.utcluj.ro/~agroza/eut
+* one example https://www.youtube.com/watch?v=tUwNHOY7OHw
+* Task 2.1 Displaying and navigating the knowledge graphs suffices (no graphs, or time bars etc)
+* Task 2.2 Deploy a running version of the web page
 
 #### Features
 * Select default ttl file or upload your own
