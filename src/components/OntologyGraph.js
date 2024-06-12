@@ -15,6 +15,7 @@ const OntologyGraph = () => {
   const [current_node_id, setCurrentNodeId] = useState('')
   const [fileName, setFileName] = useState('')
   const [selectedNodeName, setSelectedNodeName] = useState('')
+  const [isError, setError] = useState(false)
 
   const defaultFile = async () => {
     try {
@@ -36,6 +37,7 @@ const OntologyGraph = () => {
     if (fileInput) {
       fileInput.click() // Trigger click event on file input element
     } else {
+      setError(true)
       console.error('File input element not found')
     }
   }
@@ -72,6 +74,7 @@ const OntologyGraph = () => {
       setNodes(nodes)
       setEdges(edges)
     } catch (err) {
+      setError(true)
       console.error('Error while parsing:', err)
     }
   }
@@ -237,6 +240,13 @@ const OntologyGraph = () => {
       }
     }
   }, [filteredData])
+
+  useEffect(() => {
+    if (isError) {
+      alert('There is an issue parsing the ontology. Please check the file!')
+      setError(false)
+    }
+  }, [isError, fileName])
 
   const shortenName = node_label => {
     const sliced = node_label.split('/').slice(6).join('/')
