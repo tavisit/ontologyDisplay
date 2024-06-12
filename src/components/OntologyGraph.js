@@ -17,21 +17,6 @@ const OntologyGraph = () => {
   const [selectedNodeName, setSelectedNodeName] = useState('')
   const [isError, setError] = useState(false)
 
-  const defaultFile = async () => {
-    try {
-      const file = '/eut_research_infrastructure.ttl'
-      const response = await fetch(file)
-      if (!response.ok) {
-        throw new Error('Failed to fetch file')
-      }
-      setFileName(file)
-      const content = await response.text()
-      fetchOntology('text/turtle', content)
-    } catch (error) {
-      console.error('Error fetching file:', error)
-    }
-  }
-
   const selectFile = () => {
     const fileInput = document.getElementById('fileInput')
     if (fileInput) {
@@ -73,6 +58,10 @@ const OntologyGraph = () => {
 
       setNodes(nodes)
       setEdges(edges)
+
+      setSearchQuery('')
+      setMaxNodes(15)
+      setFilteredData([])
     } catch (err) {
       setError(true)
       console.error('Error while parsing:', err)
@@ -238,6 +227,8 @@ const OntologyGraph = () => {
       } catch (error) {
         console.error('Error while creating network graph:', error)
       }
+    } else {
+      new Network(container, null, {})
     }
   }, [filteredData])
 
@@ -260,7 +251,6 @@ const OntologyGraph = () => {
         style={{ width: '60%', margin: '0 auto' }}
       >
         <h1>Settings</h1>
-        <button onClick={defaultFile}>Default TTL File</button>
         <h3>File input</h3>
         <input
           id='fileInput'
