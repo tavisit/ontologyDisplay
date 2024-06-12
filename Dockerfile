@@ -13,6 +13,11 @@ COPY . .
 # Build the app
 RUN npm run build
 
+# Move static files to the desired location
+RUN mkdir -p build/app/eut_research_infrastructure/static && \
+    mv build/static/* build/app/eut_research_infrastructure/static && \
+    rm -rf build/static
+
 # Install serve to serve the build
 RUN npm install -g serve
 
