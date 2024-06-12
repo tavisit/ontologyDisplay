@@ -12,9 +12,6 @@ const App = () => {
           alignItems: 'center'
         }}
       >
-        <header>
-          <img src='https://isg.utcluj.ro/images/logo_utcn.jpg' alt='ISG'></img>
-        </header>
         <h1>Ontology Graph - By Octavian-Mihai Matei</h1>
         <OntologyGraph />
         <footer>
