@@ -45,3 +45,22 @@ docker run -p 3000:3000 --name ontology-display tavisit/ontology-graph:master
     ~~~bash
     docker run -p 3000:3000 --name ontology-display tavisit/ontology-graph:master
     ~~~
+
+
+#### If website path is different, please check
+Replace all the occurances of /app/eut_research_infrastructure with the new path
+  * src/public/index.html
+  ~~~
+  <link rel="icon" href="/app/eut_research_infrastructure/favicon.ico" />
+  <link rel="manifest" href="/app/eut_research_infrastructure/manifest.json" />
+  ~~~
+  * package.json
+  ~~~
+  "homepage": "/app/eut_research_infrastructure",
+  ~~~
+
+Afterward, build the container and run it:
+~~~
+docker build -t tavisit/ontology-graph:master .
+docker run -p 3000:3000 --name ontology-display tavisit/ontology-graph:master
+~~~
