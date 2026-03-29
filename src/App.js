@@ -24,6 +24,7 @@ const App = () => {
             <a
               href='https://github.com/tavisit/ontologyDisplay'
               target='_blank'
+			  rel="noreferrer"
             >
               https://github.com/tavisit/ontologyDisplay
             </a>

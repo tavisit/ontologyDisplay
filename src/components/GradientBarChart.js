@@ -2,16 +2,14 @@ import React, { useEffect, useRef } from 'react'
 import * as d3 from 'd3'
 
 const GradientBarChart = () => {
-  const data = [
-    { color: '#ff6400', value: 0 },
-    { color: '#806480', value: 2.5 },
-    { color: '#0064FF', value: 5 }
-    // Add more data as needed
-  ]
-
   const svgRef = useRef(null)
 
   useEffect(() => {
+    const data = [
+      { color: '#ff6400', value: 0 },
+      { color: '#806480', value: 2.5 },
+      { color: '#0064FF', value: 5 }
+    ]
     const svg = d3.select(svgRef.current)
     const extent = d3.extent(data, d => d.value)
 

@@ -51,7 +51,7 @@ export const filterGraphData = (nodes, edges, startNodeId) => {
 }
 
 export const assignGradientColor = (initial_node, node, distances) => {
-  if (node == initial_node) return '#ff6400'
+  if (node === initial_node) return '#ff6400'
   // Define the start and end colors
   const startColor = [255, 100, 0] // #ff6400
   const endColor = [0, 100, 255] // #0064ff
