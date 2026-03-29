@@ -69,7 +69,7 @@ const GradientBarChart = () => {
       .attr('transform', 'rotate(0)')
       .attr('dx', '2em')
       .attr('dy', '1em')
-  }, [data])
+  }, [])
 
   return <svg ref={svgRef} width='36' height='320'></svg> // Adjusted width and height for the vertical chart
 }
